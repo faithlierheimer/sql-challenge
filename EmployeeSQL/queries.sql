@@ -16,15 +16,56 @@ select first_name, last_name, hire_date
 from employees
 where hire_date like '%1986';
 
-/*Group by department manager, then list the department number, name, manager, employee 
-number, last name, and first name. */
-select * from dept_manager; /* dept_no emp_no*/
-select * from departments; /* dept_name dept_no */
+/*List manager of each department with department number, department name, 
+employee number, last name, and first name. */
 
-select dept_manager.dept_no, dept_manager.emp_no, employees.last_name, 
-employees.first_name
-from dept_manager 
-where dept_manager.dept_no in
-(select dept_no, dept_name from departments)
-dept_manager.emp_no in 
-(select employees.last_name, employees.first_name, employees.emp_no from employees);
+select dept_manager.dept_no, departments.dept_name, 
+employees.emp_no, employees.last_name, employees.first_name
+from employees 
+join dept_manager
+on dept_manager.emp_no = employees.emp_no
+join departments
+on departments.dept_no = dept_manager.dept_no;
+
+/*List the department of each employee with the following information: 
+employee number, last name, first name, and department name.*/
+select employees.emp_no, employees.last_name, employees.first_name, departments.dept_name
+from employees
+join dept_manager
+on dept_manager.emp_no = employees.emp_no
+join departments on departments.dept_no = dept_manager.dept_no;
+
+/*List first name, last name, and sex for employees whose first name is
+"Hercules" and last names begin with "B."*/
+
+select employees.first_name, employees.last_name, employees.sex
+from employees
+where first_name = 'Hercules' and last_name like 'B%';
+
+/* List all employees in the Sales department, including their employee number,
+last name, first name, and department name. */
+
+select employees.emp_no, employees.last_name, employees.first_name, departments.dept_name
+from employees
+join dept_emp 
+on employees.emp_no = dept_emp.emp_no
+join departments
+on dept_emp.dept_no = departments.dept_no
+where departments.dept_name = 'Sales';
+
+/*List all employees in the Sales and Development departments, including their
+employee number, last name, first name, and department name.*/
+select employees.emp_no, employees.last_name, employees.first_name, departments.dept_name
+from employees
+join dept_emp 
+on employees.emp_no = dept_emp.emp_no
+join departments
+on dept_emp.dept_no = departments.dept_no
+where departments.dept_name = 'Sales' or departments.dept_name = 'Development';
+
+/*In descending order, list the frequency count of employee last names, 
+i.e., how many employees share each last name.*/
+select employees.last_name, count(employees.last_name)
+from employees
+group by employees.last_name
+order by count(employees.last_name) desc;
